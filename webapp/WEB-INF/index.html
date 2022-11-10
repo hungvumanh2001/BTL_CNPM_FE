@@ -1610,7 +1610,6 @@
                 username: user,
                 password: pass,
                 confirmPassword: confirmPass,
-                update:false
             }
             Register(obj)
         } else
@@ -1618,17 +1617,16 @@
 
     }
     function Register(obj) {
-        // console.log(obj)
         $.ajax({
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             type: 'POST',
-            url: 'http://localhost:8080/user/change-account',
+            url: 'http://localhost:8686/user/register',
             data: JSON.stringify(obj),
             success: function (data) {
-                // console.log(data);
+                console.log(data);
                 alert("Thành  công");
                 showLoginForm();
             },
