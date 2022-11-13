@@ -2225,7 +2225,7 @@
                             Authorization: 'Bearer ' + localStorage.getItem('TOKEN')
                         },
                         type: 'POST',
-                        url: 'http://localhost:8686/receipts/add-receipt',
+                        url: 'http://localhost:8686/receipt/add-receipt',
                         data: JSON.stringify(newObj),
                         success: function () {
                         }
@@ -2273,7 +2273,7 @@
                 Authorization: 'Bearer ' + localStorage.getItem("TOKEN")
             },
             type: 'GET',
-            url: 'http://localhost:8686/receipts/find-all-by-user?userId=' + user.id,
+            url: 'http://localhost:8686/receipt/find-all-by-user?userId=' + user.id,
             success: function (data) {
                 for (let i = 0; i < data.length; i++) {
                     if(data[i].status==0){
@@ -2321,9 +2321,9 @@
                               </tr>`
                     }
                 }
+                document.getElementById('receipt').innerHTML = tmp;
             }
         });
-        document.getElementById('receipt').innerHTML = tmp;
     }
 
     function showReceiptDetail(receiptId) {
