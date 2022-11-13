@@ -1664,6 +1664,61 @@
             showLoginForm();
         });
     }
+    function logOut() {
+        localStorage.clear();
+        loadData(0);
+        loadCategory();
+        loadSaleData(0, 0.01, 0.99);
+        loadTopBarUser();
+        loadCard();
+    }
+    function loadTopBarUser() {
+        let str = '';
+        if (localStorage.getItem("USERNAME") != null) {
+            str += `<li onclick="showAccount()"><a>${localStorage.getItem("USERNAME")}</a></li>
+                   <li><a >Check out</a></li>
+                   <li><a onclick="logOut()">Log out</a></li>`
+        } else {
+            str += `<li><a onclick="showRegisterForm()">Register</a></li>
+                    <li><a onclick="showLoginForm()">Log In</a></li>`
+        }
+        document.getElementById('topbarUser').innerHTML = str;
+    }
+    function confirmChangePassword() {
+        let user = JSON.parse(localStorage.getItem('USER'));
+        let username = document.getElementById('username').value;
+        let oldPass = document.getElementById('oldPassword').value;
+        let newPass = document.getElementById('newPassword').value;
+        let confirmNewPass = document.getElementById('confirmNewPassword').value;
+        console.log(confirmNewPass);
+        if (username == user.username && oldPass == localStorage.getItem('PASSWORD') && newPass == confirmNewPass) {
+            let obj = {
+                id: user.id,
+                username: username,
+                enabled: true,
+                password: newPass,
+                confirmPassword: confirmNewPass
+            }
+            console.log(obj);
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + localStorage.getItem('TOKEN')
+                },
+                type: 'PUT',
+                url: 'http://localhost:8686/update-user/' + user.id,
+                data: JSON.stringify(obj),
+                success: function () {
+                    console.log(obj)
+                    alert('Thay đổi thành công');
+                    showLoginForm();
+                }
+            });
+        } else {
+            alert('Thay đổi thất bại');
+        }
+    }
 </script>
 <!-- END BODY -->
 
