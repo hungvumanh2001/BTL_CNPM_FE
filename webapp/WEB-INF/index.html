@@ -581,6 +581,7 @@
     loadData(0);
     loadCategory();
     loadSaleData(0, 0.01, 0.99);
+    loadTopBarUser();
 
 
     function loadData(page) {
@@ -1520,6 +1521,19 @@
                 }
             });
         }
+    }
+
+    function loadTopBarUser() {
+        let str = '';
+        if (localStorage.getItem("USERNAME") != null) {
+            str += `<li onclick="showAccount()"><a>${localStorage.getItem("USERNAME")}</a></li>
+                   <li><a >Check out</a></li>
+                   <li><a onclick="logOut()">Log out</a></li>`
+        } else {
+            str += `<li><a onclick="showRegisterForm()">Register</a></li>
+                    <li><a onclick="showLoginForm()">Log In</a></li>`
+        }
+        document.getElementById('topbarUser').innerHTML = str;
     }
 </script>
 <!-- END BODY -->
