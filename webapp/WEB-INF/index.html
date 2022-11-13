@@ -1992,11 +1992,11 @@
                 localStorage.setItem("PASSWORD", pass);
                 alert('Đăng nhập thành công');
                 home();
+            },
+            error: function (){
+                alert('Đăng nhập thất bại');
+                showLoginForm();
             }
-
-        }).fail(function (err) {
-            alert('Đăng nhập thất bại');
-            showLoginForm();
         });
     }
 
