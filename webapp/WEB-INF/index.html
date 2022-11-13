@@ -1629,7 +1629,7 @@
                                 <div class="mb-3">
                                   <input type="password" class="form-control" id="pass" placeholder="Password">
                                 </div>
-                                <div class="text-center"><button class="btn btn-color px-5 mb-5 w-100" onclick="checkLogin()">Login</button></div>
+                                <button class="btn btn-color px-5 mb-5 w-100" onclick="checkLogin()">Login</button>
                                 <div id="emailHelp" class="form-text text-center mb-5 text-dark">Not
                                   Registered? <a class="text-dark fw-bold" onclick="showRegisterForm()"> Create an
                                     Account</a>
@@ -1745,18 +1745,17 @@
             url: 'http://localhost:8686/user/login',
             data: JSON.stringify(obj),
             success: function (data) {
-                console.log("oke")
                 localStorage.setItem("TOKEN", data.accessToken);
                 localStorage.setItem("USER", JSON.stringify(data));
                 localStorage.setItem("USERNAME", data.username);
                 localStorage.setItem("USERID", data.id);
                 localStorage.setItem("PASSWORD", pass);
-                console.log('Đăng nhập thành công');
+                alert('Đăng nhập thành công');
                 home();
             }
 
         }).fail(function (err) {
-            localStorage.setItem("errr", err);
+            alert('Đăng nhập thất bại');
             showLoginForm();
         });
     }
