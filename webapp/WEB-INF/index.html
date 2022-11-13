@@ -1362,12 +1362,12 @@
                                 </div>
                                 <div class="pull-right">
                                   <label class="control-label">Sort&nbsp;By:</label>
-                                  <select class="form-control input-sm">
-                                    <option value="#?sort=p.sort_order&amp;order=ASC" selected="selected">Default</option>
-                                    <option value="#?sort=pd.name&amp;order=ASC">Name (A - Z)</option>
-                                    <option value="#?sort=pd.name&amp;order=DESC">Name (Z - A)</option>
-                                    <option value="#?sort=p.price&amp;order=ASC">Price (Low &gt; High)</option>
-                                    <option value="#?sort=p.price&amp;order=DESC">Price (High &gt; Low)</option>
+                                  <select class="form-control input-sm" id="selectSort" onchange="sort(0)">
+                                    <option value="default" selected="selected">Default</option>
+                                    <option value="nameASC">Name (A - Z)</option>
+                                    <option value="nameDESC">Name (Z - A)</option>
+                                    <option value="priceASC">Price (Low &gt; High)</option>
+                                    <option value="priceDESC">Price (High &gt; Low)</option>
                                   </select>
                                 </div>
                               </div>
@@ -1514,6 +1514,247 @@
         });
     }
 
+    function sort(page){
+        let pre = page - 1 > 0 ? page - 1 : 0;
+        let next = page + 1;
+        let tmp = '';
+        let value = document.getElementById('selectSort').value;
+        console.log(value)
+        switch (value) {
+            case "default":
+                showSearch(0);
+                break;
+            case "nameASC":
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8686/products/sort-product-by-name-desc?page=' + page,
+                    success: function (list) {
+                        for (let i = 0; i < list.content.length; i++) {
+                            if (list.content[i].sale != 0) {
+                                let salePrice = list.content[i].price * (1 - list.content[i].sale);
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                        <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price" style="text-decoration-line:line-through; color: #3c3c3c">$${list.content[i].price}</div>
+                                         <div class="pi-price">$${salePrice}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            } else {
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                         <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price">$${list.content[i].price}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            }
+                        }
+                        //Phân trang
+                        let tmpPage = `<div class="col-md-8 col-sm-8">
+                                <ul class="pagination pull-right">
+                                  <li><a href="javascript:;" onclick="sort(${pre})">&laquo;</a></li>
+                                  <li><a href="javascript:;" onclick="sort(0)">1</a></li>
+                                  <li><a href="javascript:;" onclick="sort(1)">2</a></li>
+                                  <li><a href="javascript:;" onclick="sort(2)">3</a></li>
+                                  <li><a href="javascript:;" onclick="sort(3)">4</a></li>
+                                  <li><a href="javascript:;" onclick="sort(4)">5</a></li>
+                                  <li><a href="javascript:;" onclick="sort(${next})">&raquo;</a></li>
+                                </ul>
+                              </div>`;
+                        document.getElementById('searchContent').innerHTML = tmp;
+                        document.getElementById('page').innerHTML = tmpPage;
+                    }
+                });
+                break;
+            case "nameDESC":
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8686/products/sort-product-by-name-asc?page=' + page,
+                    success: function (list) {
+                        for (let i = 0; i < list.content.length; i++) {
+                            if (list.content[i].sale != 0) {
+                                let salePrice = list.content[i].price * (1 - list.content[i].sale);
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                        <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price" style="text-decoration-line:line-through; color: #3c3c3c">$${list.content[i].price}</div>
+                                         <div class="pi-price">$${salePrice}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            } else {
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                         <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price">$${list.content[i].price}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            }
+                        }
+                        //Phân trang
+                        let tmpPage = `<div class="col-md-8 col-sm-8">
+                                <ul class="pagination pull-right">
+                                  <li><a href="javascript:;" onclick="sort(${pre})">&laquo;</a></li>
+                                  <li><a href="javascript:;" onclick="sort(0)">1</a></li>
+                                  <li><a href="javascript:;" onclick="sort(1)">2</a></li>
+                                  <li><a href="javascript:;" onclick="sort(2)">3</a></li>
+                                  <li><a href="javascript:;" onclick="sort(3)">4</a></li>
+                                  <li><a href="javascript:;" onclick="sort(4)">5</a></li>
+                                  <li><a href="javascript:;" onclick="sort(${next})">&raquo;</a></li>
+                                </ul>
+                              </div>`;
+                        document.getElementById('searchContent').innerHTML = tmp;
+                        document.getElementById('page').innerHTML = tmpPage;
+                    }
+                });
+                break;
+            case "priceASC":
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8686/products/find-product-asc?page=' + page,
+                    success: function (list) {
+                        for (let i = 0; i < list.content.length; i++) {
+                            if (list.content[i].sale != 0) {
+                                let salePrice = list.content[i].price * (1 - list.content[i].sale);
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                        <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price" style="text-decoration-line:line-through; color: #3c3c3c">$${list.content[i].price}</div>
+                                         <div class="pi-price">$${salePrice}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            } else {
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                         <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price">$${list.content[i].price}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            }
+                        }
+                        //Phân trang
+                        let tmpPage = `<div class="col-md-8 col-sm-8">
+                                <ul class="pagination pull-right">
+                                  <li><a href="javascript:;" onclick="sort(${pre})">&laquo;</a></li>
+                                  <li><a href="javascript:;" onclick="sort(0)">1</a></li>
+                                  <li><a href="javascript:;" onclick="sort(1)">2</a></li>
+                                  <li><a href="javascript:;" onclick="sort(2)">3</a></li>
+                                  <li><a href="javascript:;" onclick="sort(3)">4</a></li>
+                                  <li><a href="javascript:;" onclick="sort(4)">5</a></li>
+                                  <li><a href="javascript:;" onclick="sort(${next})">&raquo;</a></li>
+                                </ul>
+                              </div>`;
+                        document.getElementById('searchContent').innerHTML = tmp;
+                        document.getElementById('page').innerHTML = tmpPage;
+                    }
+                });
+                break;
+            case "priceDESC":
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8686/products/find-product-desc?page=' + page,
+                    success: function (list) {
+                        for (let i = 0; i < list.content.length; i++) {
+                            if (list.content[i].sale != 0) {
+                                let salePrice = list.content[i].price * (1 - list.content[i].sale);
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                        <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price" style="text-decoration-line:line-through; color: #3c3c3c">$${list.content[i].price}</div>
+                                         <div class="pi-price">$${salePrice}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            } else {
+                                tmp += `<div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="product-item">
+                                         <div class="pi-img-wrapper">
+                                            <img src="${list.content[i].imageFirst}" class="img-responsive">
+                                            <div>
+                                              <a href="${list.content[i].imageRoot}" class="btn btn-default fancybox-button">Zoom</a>
+                                              <a href="#product-pop-up" class="btn btn-default fancybox-fast-view">View</a>
+                                            </div>
+                                         </div>
+                                         <h3><a >${list.content[i].title}</a></h3>
+                                         <div class="pi-price">$${list.content[i].price}</div>
+                                         <a href="javascript:;" class="btn btn-default add2cart">Add to cart</a>
+                                    </div>
+                                </div>`
+                            }
+                        }
+                        //Phân trang
+                        let tmpPage = `<div class="col-md-8 col-sm-8">
+                                <ul class="pagination pull-right">
+                                  <li><a href="javascript:;" onclick="sort(${pre})">&laquo;</a></li>
+                                  <li><a href="javascript:;" onclick="sort(0)">1</a></li>
+                                  <li><a href="javascript:;" onclick="sort(1)">2</a></li>
+                                  <li><a href="javascript:;" onclick="sort(2)">3</a></li>
+                                  <li><a href="javascript:;" onclick="sort(3)">4</a></li>
+                                  <li><a href="javascript:;" onclick="sort(4)">5</a></li>
+                                  <li><a href="javascript:;" onclick="sort(${next})">&raquo;</a></li>
+                                </ul>
+                              </div>`;
+                        document.getElementById('searchContent').innerHTML = tmp;
+                        document.getElementById('page').innerHTML = tmpPage;
+                    }
+                });
+                break;
+        }
+    }
+
     function findAllByPrice(page) {
         let pre = page - 1 > 0 ? page - 1 : 0;
         let next = page + 1;
@@ -1596,7 +1837,6 @@
             });
         }
     }
-
 
     function loadTopBarUser() {
         let str = '';
@@ -2275,7 +2515,7 @@
             url: 'http://localhost:8686/receipt/find-all-by-user?userId=' + user.id,
             success: function (data) {
                 for (let i = 0; i < data.length; i++) {
-                    if(data[i].status==0){
+                    if (data[i].status == 0) {
                         tmp += `<tr>
                                 <td class="goods-page-description">
                                   <h3><a href="javascript:;">${data[i].id}</a></h3>
@@ -2297,7 +2537,7 @@
                                 </td>
                               </tr>`
                     }
-                    if(data[i].status==1){
+                    if (data[i].status == 1) {
                         tmp += `<tr>
                                 <td class="goods-page-description">
                                   <h3><a href="javascript:;">${data[i].id}</a></h3>
@@ -2403,7 +2643,7 @@
                               </tr>`
                 }
                 document.getElementById('receipt-detail').innerHTML = tmp;
-                document.getElementById('amount-price').innerHTML = "$"+data[0].receipt.priceTotal;
+                document.getElementById('amount-price').innerHTML = "$" + data[0].receipt.priceTotal;
             }
         });
     }
