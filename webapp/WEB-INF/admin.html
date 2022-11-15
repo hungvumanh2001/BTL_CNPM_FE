@@ -28,6 +28,19 @@
     <!-- CSS Files -->
     <link id="pagestyle" href="./admin/assets/css/material-dashboard.css?v=3.0.4" rel="stylesheet"/>
 
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+            integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+            crossorigin="anonymous"
+    />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+            crossorigin="anonymous"
+    ></script>
+
 </head>
 
 
@@ -101,7 +114,7 @@
 
 
             <li class="nav-item">
-                <a class="nav-link text-white ">
+                <a class="nav-link text-white " onclick="loadOrder()">
 
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">notifications</i>
@@ -173,7 +186,104 @@
 
 <!--Ajax-->
 <script>
+    //hiển thị danh sách hàng mà khách mua của mình chờ xác nhận
+    function loadOrder() {
+        document.getElementById('main').innerHTML = `<div class="table">
+      <table>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>image</th>
+            <th>number</th>
+            <th>price</th>
+            <th>category</th>
+            <th>username</th>
+            <th>status</th>
+            <th>action</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
 
+        </tbody>
+      </table>
+    </div>`;
+        $.ajax({
+            type: "GET",
+            url:
+                "http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=" +
+                JSON.parse(localStorage.getItem("USER")).id +
+                "&status=0",
+            success: function (data) {
+                console.log(data)
+                let str = "";
+                for (let i = 0; i < data.length; i++) {
+                    str += `<tr>
+            <td>
+              ${i + 1}
+            </td>
+            <td><img src="images/${
+                        data[i].product.imageRoot
+                    }" style="width: 4rem;height: 4rem;object-fit: cover"></td>
+
+            <td>
+              <p class="desc">
+                ${data[i].number}fload
+              </p>
+            </td>
+            <td>${convertPrice(data[i].product.price)}</td>
+            <td>
+              ${data[i].product.category.name}
+            </td>
+            <td>
+              <div class="status">
+                <p class="status__active">${data[i].user.username}</p>
+              </div>
+            </td>
+            <td>
+              <div class="checkbox">
+                <input
+                  type="checkbox"
+                  name="active"
+                  class="checkbox__input"
+                  id="checkbox__active"
+                  onclick="confirmOrder(${data[i].id})"
+                />
+                <label class="checkbox__lable" for="checkbox__active">
+                  <div class="checkbox__circle"></div>
+                </label>
+              </div>
+            </td>
+            <td>
+              <div class="action">
+
+                <i class="fa-solid fa-trash" style="cursor: pointer" onclick="deleteOrder(${
+                        data[i].id
+                    })"></i>
+              </div>
+            </td>
+          </tr>`;
+                }
+                document.getElementById("tbody").innerHTML = str;
+            }
+        });
+    }
+    function confirmOrder(id) {
+        // console.log(id)
+        $.ajax({
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            },
+
+            type: "PUT",
+            url: "http://localhost:8686/cart/confirm?id=" + id,
+            success: function (data) {
+                alert("Đã thay đổi trạng thái đơn hàng!");
+                cart();
+            }
+        });
+    }
 </script>
 </body>
 

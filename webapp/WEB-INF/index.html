@@ -868,13 +868,13 @@
   <!--Ajax-->
   <script>
     // settingAdmin();
-    showAdmin();
+    // showAdmin();
     // loadOrder();
 
-    // loadData(0);
-    // loadCategory();
-    // loadSaleData(0, 0.01, 0.99);
-    // loadTopBarUser();
+    loadData(0);
+    loadCategory();
+    loadSaleData(0, 0.01, 0.99);
+    loadTopBarUser();
 
     function loadData(page) {
       let pre = page - 1 > 0 ? page - 1 : 0;
@@ -963,7 +963,7 @@
       if (localStorage.getItem("USER") != null) {
         let user = JSON.parse(localStorage.getItem("USER"));
         if (user.roles[0].authority == "ROLE_ADMIN") {
-          str += `<li><a onclick="showAdmin()">Admin theme</a></li>`;
+          str += `<li><a href="admin.html">Admin theme</a></li>`;
         }
       }
       str += `<!-- BEGIN TOP SEARCH -->
