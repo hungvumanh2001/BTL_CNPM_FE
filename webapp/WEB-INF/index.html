@@ -143,6 +143,10 @@
       rel="stylesheet"
       type="text/css"
     />
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<link rel="stylesheet" href="seller/statistical.css">
   </head>
   <!-- Head END -->
 
@@ -863,10 +867,14 @@
 
   <!--Ajax-->
   <script>
-    loadData(0);
-    loadCategory();
-    loadSaleData(0, 0.01, 0.99);
-    loadTopBarUser();
+    // settingAdmin();
+    showAdmin();
+    // loadOrder();
+
+    // loadData(0);
+    // loadCategory();
+    // loadSaleData(0, 0.01, 0.99);
+    // loadTopBarUser();
 
     function loadData(page) {
       let pre = page - 1 > 0 ? page - 1 : 0;
@@ -955,7 +963,7 @@
       if (localStorage.getItem("USER") != null) {
         let user = JSON.parse(localStorage.getItem("USER"));
         if (user.roles[0].authority == "ROLE_ADMIN") {
-          str += `<li><a href="admin.html">Admin theme</a></li>`;
+          str += `<li><a onclick="showAdmin()">Admin theme</a></li>`;
         }
       }
       str += `<!-- BEGIN TOP SEARCH -->
@@ -2568,6 +2576,128 @@
       }
     }
 
+    // đợi hàm onclick
+    function showAdmin() {
+      document.body.innerHTML = `
+      <div style="text-align:center;font-size:2rem;">Admin</div>
+      <div class="dropdown">
+  <button class="dropbtn">Information</button>
+  <div class="dropdown-content">
+  <a href="#">Link 1</a>
+  <a href="#">Link 2</a>
+  <a href="#">Link 3</a>
+  </div>
+</div>
+      <div style="display:inline-block;width:20rem;">
+        <div class="input-group mb-3">
+  <input id="search" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+  <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="searchByName()">Button</button>
+</div>
+
+</div>
+      <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">username</th>
+      <th scope="col">Role</th>
+      <th scope="col">Enable</th>
+      <th scope="col">Action<th>
+    </tr>
+  </thead>
+  <tbody id="tdata">
+    
+  </tbody>
+</table>`;
+      loadAccount();
+     
+    }
+    function searchByName(){
+      let search=document.getElementById('search').value;
+      let tmp=``;
+      $.ajax({
+        // headers: {
+        //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+        // },
+        type: "GET",
+        url:"http://localhost:8686/user/search-by-username?name="+search ,
+        // +JSON.parse(localStorage.getItem("USER")).id,
+        success: function (data) {
+          for(let i=0;i<data.length;i++)
+          {
+            
+            tmp += `<tr>
+      <th scope="row">${i}</th>
+      <td>${data[i].username}</td>
+      <td>${data[i].roles[0].name=='ROLE_USER'?"USER":"ADMIN"}</td>
+      <td>Active</td>
+      <td>
+        <div class="admin-table__action">
+                            <i class="fa-solid fa-pen"></i>
+                            <i class="fa-solid fa-wrench"></i>
+                            <i class="fa-solid fa-trash" onclick="deleteUser(${data[i].id})"></i>
+                            </div>
+      </td>
+        </tr>`;
+
+          }
+          document.getElementById('tdata').innerHTML=tmp;
+      }
+      });
+      document.getElementById('search').value='';
+    }
+    function loadAccount()
+    {
+      var tmp = ``;
+      $.ajax({
+        // headers: {
+        //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+        // },
+        type: "GET",
+        url:"http://localhost:8686/user/all" ,
+        // +JSON.parse(localStorage.getItem("USER")).id,
+        success: function (data) {
+          for(let i=0;i<data.length;i++)
+          {
+            
+            tmp += `<tr>
+      <th scope="row">${i}</th>
+      <td>${data[i].username}</td>
+      <td>${data[i].roles[0].name=='ROLE_USER'?"USER":"ADMIN"}</td>
+      <td>Active</td>
+      <td>
+        <div class="admin-table__action">
+                            <i class="fa-solid fa-pen"></i>
+                            <i class="fa-solid fa-wrench"></i>
+                            <i class="fa-solid fa-trash" onclick="deleteUser(${data[i].id})"></i>
+                            </div>
+      </td>
+        </tr>`;
+
+          }
+          document.getElementById('tdata').innerHTML=tmp;
+      }
+      });
+      
+        
+    }
+    function deleteUser(id)
+    {
+      $.ajax({
+            // headers: {
+
+            //     Authorization: 'Bearer ' + localStorage.getItem("TOKEN")
+            // },
+            type: 'DELETE',
+            url: 'http://localhost:8686/user?id=' + id,
+            success: function (data) {
+                alert("Đã xóa nhân viên!");
+                showAdmin();
+
+            },
+        });
+    }
+
     function viewCart() {
       let str = `<div class="container">
         <!-- BEGIN SIDEBAR & CONTENT -->
@@ -3120,9 +3250,8 @@
     }
 
     //hiển thị danh sách hàng mà khách mua của mình chờ xác nhận
-    function loadOrder()
-    {
-        document.body.innerHTML = `<div class="table">
+    function loadOrder() {
+      document.body.innerHTML = `<div class="table">
       <table>
         <thead>
           <tr>
@@ -3140,23 +3269,27 @@
 
         </tbody>
       </table>
-    </div>`
-            $.ajax({
-                type: 'GET',
-                url: 'http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId='+ JSON.parse(localStorage.getItem("USER")).id+'&status=2',
-                success: function (data) {
-                    let str='';
-                    for(let i=0;i<data.length;i++)
-                    {
-                        str+=`<tr>
+    </div>`;
+      $.ajax({
+        type: "GET",
+        url:
+          "http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=" +
+          JSON.parse(localStorage.getItem("USER")).id +
+          "&status=2",
+        success: function (data) {
+          let str = "";
+          for (let i = 0; i < data.length; i++) {
+            str += `<tr>
             <td>
-              ${i+1}
+              ${i + 1}
             </td>
-            <td><img src="images/${data[i].product.imageRoot}" style="width: 4rem;height: 4rem;object-fit: cover"></td>
+            <td><img src="images/${
+              data[i].product.imageRoot
+            }" style="width: 4rem;height: 4rem;object-fit: cover"></td>
 
             <td>
               <p class="desc">
-                ${data[i].number}
+                ${data[i].number}fload
               </p>
             </td>
             <td>${convertPrice(data[i].product.price)}</td>
@@ -3185,49 +3318,44 @@
             <td>
               <div class="action">
 
-                <i class="fa-solid fa-trash" style="cursor: pointer" onclick="deleteOrder(${data[i].id})"></i>
+                <i class="fa-solid fa-trash" style="cursor: pointer" onclick="deleteOrder(${
+                  data[i].id
+                })"></i>
               </div>
             </td>
-          </tr>`
-                    }
-                    document.getElementById('tbody').innerHTML=str;
-                }
-            });
+          </tr>`;
+          }
+          document.getElementById("tbody").innerHTML = str;
+        },
+      });
     }
-    // convert 
+    // convert
     function convertPrice(price) {
-        let convert = '';
-        var stack = [];
-        let str = '';
-        while (price >= 1000) {
-
-            let result = price % 1000;
-            if (result < 10) {
-                convert = ".00" + (price % 1000).toString()
-            } else {
-
-                if (result < 100) {
-                    convert = ".0" + result.toString();
-                } else
-                    convert = "." + (price % 1000).toString();
-
-            }
-            stack.push(convert)
-            price = (parseInt(price / 1000)).toString();
+      let convert = "";
+      var stack = [];
+      let str = "";
+      while (price >= 1000) {
+        let result = price % 1000;
+        if (result < 10) {
+          convert = ".00" + (price % 1000).toString();
+        } else {
+          if (result < 100) {
+            convert = ".0" + result.toString();
+          } else convert = "." + (price % 1000).toString();
         }
-        stack.push(price);
-        for (var i = stack.length - 1; i >= 0; i--) {
-            //pop push cũng đc vì nó là hàm của stack
-            str += stack[i];
-
-        }
-        return str;
+        stack.push(convert);
+        price = parseInt(price / 1000).toString();
+      }
+      stack.push(price);
+      for (var i = stack.length - 1; i >= 0; i--) {
+        //pop push cũng đc vì nó là hàm của stack
+        str += stack[i];
+      }
+      return str;
     }
 
-
-  function settingAdmin()
-  {
-    document.getElementById(`tbody`).innerHTML=`<div class="w3-bar w3-black">
+    function settingAdmin() {
+      document.body.innerHTML = `<div class="w3-bar w3-black">
   <button class="w3-bar-item w3-button" onclick="openCity('infor')">Thông tin admin </button>
   <button class="w3-bar-item w3-button" onclick="openCity('sales')">Sales</button>
 </div>
@@ -3238,17 +3366,16 @@
 
 <div id="sales" class="w3-container city" style="display:none">
   <h2>Viết doanh thu</h2>
-</div>`
-  }
-  function open(name) {
-  var i;
-  var x = document.getElementsByClassName("city");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  document.getElementById(cityName).style.display = "block";  
-}
-
+</div>`;
+    }
+    function open(name) {
+      var i;
+      var x = document.getElementsByClassName("city");
+      for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+      }
+      document.getElementById(cityName).style.display = "block";
+    }
   </script>
   <!-- END BODY -->
 </html>
