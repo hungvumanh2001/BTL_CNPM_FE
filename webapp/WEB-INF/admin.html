@@ -207,11 +207,11 @@
         </tbody>
       </table>
     </div>`;
+        console.log(localStorage.getItem("USERID"))
         $.ajax({
             type: "GET",
             url:
-                "http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=" +
-                JSON.parse(localStorage.getItem("USER")).id +
+                "http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=" +localStorage.getItem("USERID") +
                 "&status=0",
             success: function (data) {
                 console.log(data)

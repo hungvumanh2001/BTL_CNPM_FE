@@ -3460,6 +3460,13 @@
       }
       document.getElementById(cityName).style.display = "block";
     }
+    function logOut(){
+      localStorage.clear();
+      loadData(0);
+      loadCategory();
+      loadSaleData(0, 0.01, 0.99);
+      loadTopBarUser();
+    }
   </script>
   <!-- END BODY -->
 </html>
