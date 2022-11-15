@@ -1309,6 +1309,51 @@
                         </div>
                     </div>
                     <!-- END FOOTER -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Thêm sản phẩm</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" >
+                <form id="addForm">
+                    <label>Price: </label>
+                    <input type="text" name="price" class="form-control">
+                    <label>imageRoot: </label>
+                    <input type="text" name="imageRoot" class="form-control">
+                    <label>imageFirst: </label>
+                    <input type="text" name="imageFirst" class="form-control">
+                    <label>imageSecond: </label>
+                    <input type="text" name="imageSecond" class="form-control">
+                    <label>number: </label>
+                    <input type="text" name="number" class="form-control">
+                    <label>description: </label>
+                    <input type="text" name="description" class="form-control">
+                    <label>title: </label>
+                    <input type="text" name="title" class="form-control">
+                    <label>date: </label>
+                    <input type="text" name="date" class="form-control">
+                    <label>status: </label>
+                    <input type="text" name="status" class="form-control">
+                    <label>sale: </label>
+                    <input type="text" name="sale" class="form-control">
+                    <label>category: </label>
+                    <input type="text" name="category" class="form-control">
+                    <label>productType: </label>
+                    <input type="text" name="productType" class="form-control">
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="save()">Save </button>
+            </div>
+        </div>
+    </div>
+</div>
 
                     <!-- BEGIN fast view of a product -->
                     <div id="product-pop-up" style="display: none; width: 700px;">
@@ -2392,6 +2437,45 @@
                 document.getElementById('amount-price').innerHTML = "$"+data[0].receipt.priceTotal;
             }
         });
+    }
+
+    function showAddForm() {
+        $('#exampleModal').modal('show');
+    }
+    function save() {
+        let formData = new FormData(addForm);
+        let obj = {
+            price: formData.get('price'),
+            imageRoot: formData.get('imageRoot'),
+            imageFirst: formData.get('imageFirst'),
+            imageSecond: formData.get('imageSecond'),
+            number: formData.get('number'),
+            description: formData.get('description'),
+            title: formData.get('title'),
+            date: formData.get('date'),
+            status: formData.get('status'),
+            sale: formData.get('sale'),
+            category: formData.get('category'),
+            productType: formData.get('productType'),
+        }
+        $.ajax({
+            headers:{
+                'Accept' : 'application/json',
+                'Content-Type':'application/json',
+            },
+            type:'POST',
+            url: "http://localhost:8686/products",
+            data: JSON.stringify(obj),
+            success: function ()
+            {
+                loadData();
+                $('#exampleModal').modal('hide');
+            },
+            error: function (error){
+                console.log(error)
+            }
+
+        })
     }
 
 </script>
