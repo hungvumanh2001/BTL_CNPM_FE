@@ -863,11 +863,10 @@
 
   <!--Ajax-->
   <script>
-    loadOrder();
-    // loadData(0);
-    // loadCategory();
-    // loadSaleData(0, 0.01, 0.99);
-    // loadTopBarUser();
+    loadData(0);
+    loadCategory();
+    loadSaleData(0, 0.01, 0.99);
+    loadTopBarUser();
 
     function loadData(page) {
       let pre = page - 1 > 0 ? page - 1 : 0;
@@ -956,7 +955,7 @@
       if (localStorage.getItem("USER") != null) {
         let user = JSON.parse(localStorage.getItem("USER"));
         if (user.roles[0].authority == "ROLE_ADMIN") {
-          str += `<li><a onclick="showAdmin()">Admin theme</a></li>`;
+          str += `<li><a href="admin.html">Admin theme</a></li>`;
         }
       }
       str += `<!-- BEGIN TOP SEARCH -->
@@ -2475,61 +2474,6 @@
           },
         });
       }
-    }
-
-    // đợi hàm onclick
-    function showAdmin() {
-      document.body.innerHTML = `<div class="admin">
-        <div class="admin__infor">
-            <h2 class="admin__title">Admin</h2>
-            <div class="admin__search">
-                <input placeholder="search ..." type="text" class="admin__search-input">
-                <i class="fa-solid fa-magnifying-glass admin__search-icon" ></i>
-            </div>
-        </div>
-        <div>
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>id</th>
-                        <th>username</th>
-                        <th>password</th>
-                        <th>roles</th>
-                        <th>status</th>
-                        <th>action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>admin</td>
-                        <td>
-                            <p class="desc">admin</p>
-                        </td>
-                        <td>
-                            <select>
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div class="status">
-                                <p class="status__active">Active</p>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="admin-table__action">
-                            <i class="fa-solid fa-pen"></i>
-                            <i class="fa-solid fa-wrench"></i>
-                            <i class="fa-solid fa-trash"></i>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>`;
-    loadAccount();
     }
 
     function viewCart() {
