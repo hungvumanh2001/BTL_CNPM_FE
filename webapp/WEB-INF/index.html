@@ -581,6 +581,8 @@
     loadData(0);
     loadCategory();
     loadSaleData(0, 0.01, 0.99);
+    let addForm = document.getElementById('addForm');
+    let editForm = document.getElementById('editForm');
 
 
     function loadData(page) {
@@ -1350,6 +1352,52 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="save()">Save </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--modal2-->
+<div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel1">Edit Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="id">
+                    <label>Price: </label>
+                    <input type="text" name="price" class="form-control" id="price">
+                    <label>imageRoot: </label>
+                    <input type="text" name="imageRoot" class="form-control" id="imageRoot">
+                    <label>imageFirst: </label>
+                    <input type="text" name="imageFirst" class="form-control" id="imageFirst">
+                    <label>imageSecond: </label>
+                    <input type="text" name="imageSecond" class="form-control" id="imageSecond">
+                    <label>number: </label>
+                    <input type="text" name="number" class="form-control" id="number">
+                    <label>description: </label>
+                    <input type="text" name="description" class="form-control" id="description">
+                    <label>title: </label>
+                    <input type="text" name="title" class="form-control" id="title">
+                    <label>date: </label>
+                    <input type="text" name="date" class="form-control" id="date">
+                    <label>status: </label>
+                    <input type="text" name="status" class="form-control" id="status">
+                    <label>sale: </label>
+                    <input type="text" name="sale" class="form-control" id="sale">
+                    <label>category: </label>
+                    <input type="text" name="category" class="form-control" id="category">
+                    <label>productType: </label>
+                    <input type="text" name="productType" class="form-control" id="productType">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="update()">Edit </button>
             </div>
         </div>
     </div>
@@ -2456,7 +2504,7 @@
             status: formData.get('status'),
             sale: formData.get('sale'),
             category: formData.get('category'),
-            productType: formData.get('productType'),
+            productType: formData.get('productType')
         }
         $.ajax({
             headers:{
@@ -2475,6 +2523,75 @@
                 console.log(error)
             }
 
+        })
+    }
+    function showEditForm(id) {
+        $("#exampleModal1").modal("show");
+        let editFormData =  new FormData(editForm);
+        $.ajax({
+            type: "GET",
+            url: " http://localhost:8686/products/"+id,
+            success: function (data) {
+                console.log(data)
+                document.getElementById('id').value = data.id;
+                document.getElementById('price').value = data.price;
+                document.getElementById('imageRoot').value = data.imageRoot;
+                document.getElementById('imageFirst').value = data.imageFirst;
+                document.getElementById('imageSecond').value = data.imageSecond;
+                document.getElementById('number').value = data.number;
+                document.getElementById('description').value = data.description;
+                document.getElementById('title').value = data.title;
+                document.getElementById('date').value = data.date;
+                document.getElementById('status').value = data.status;
+                document.getElementById('sale').value = data.sale;
+                document.getElementById('category').value = data.category;
+                document.getElementById('productType').value = data.productType;
+            }
+        })
+    }
+    function update() {
+        let formData = new FormData(editForm);
+        let id= document.getElementById('id').value;
+        let obj = {
+            price: formData.get('price'),
+            imageRoot: formData.get('imageRoot'),
+            imageFirst: formData.get('imageFirst'),
+            imageSecond: formData.get('imageSecond'),
+            number: formData.get('number'),
+            description: formData.get('description'),
+            title: formData.get('title'),
+            date: formData.get('date'),
+            status: formData.get('status'),
+            sale: formData.get('sale'),
+            category: formData.get('category'),
+            productType: formData.get('productType')
+        }
+        $.ajax({
+            headers:{
+                'Accept' : 'application/json',
+                'Content-Type':'application/json',
+            },
+            type:'PUT',
+            url: "http://localhost:8686/products/"+id,
+            data: JSON.stringify(obj),
+            success: function ()
+            {
+                loadData();
+                $('#exampleModal1').modal('hide');
+            },
+            error: function (error){
+                console.log(error)
+            }
+
+        })
+    }
+    function showProductDelete(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: "http://localhost:8686/products/"+id,
+            success: function (data) {
+                loadData();
+            }
         })
     }
 
