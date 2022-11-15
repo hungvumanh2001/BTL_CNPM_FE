@@ -868,13 +868,10 @@
   <!--Ajax-->
   <script>
     // settingAdmin();
-    showAdmin();
+    // showAdmin();
     // loadOrder();
 
-    // loadData(0);
-    // loadCategory();
-    // loadSaleData(0, 0.01, 0.99);
-    // loadTopBarUser();
+   
 
     function loadData(page) {
       let pre = page - 1 > 0 ? page - 1 : 0;
@@ -2180,7 +2177,14 @@
       }
       document.getElementById("topbarUser").innerHTML = str;
     }
-
+//logOut 
+    function logOut(){
+      localStorage.clear();
+      loadData(0);
+    loadCategory();
+    loadSaleData(0, 0.01, 0.99);
+    loadTopBarUser();
+    }
     function showLoginForm() {
       let str = `<div class="container">
                         <div class="row">
@@ -2491,9 +2495,8 @@
       <div class="dropdown">
   <button class="dropbtn">Information</button>
   <div class="dropdown-content">
-  <a href="#">Link 1</a>
-  <a href="#">Link 2</a>
-  <a href="#">Link 3</a>
+  <a onclick=doanhthu()>Doanh thu</a>
+  <a onclick="showAdmin()">Thông tin người dùng</a>
   </div>
 </div>
       <div style="display:inline-block;width:20rem;">
@@ -2503,7 +2506,8 @@
 </div>
 
 </div>
-      <table class="table">
+  <div id="main">
+    <table class="table">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -2516,9 +2520,28 @@
   <tbody id="tdata">
     
   </tbody>
-</table>`;
+</table></div>`;
       loadAccount();
      
+    }
+    function doanhthu()
+    {
+      var sum=0;
+      $.ajax({
+        // headers: {
+        //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+        // },
+        type: "GET",
+        url:"http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=&status=2="+search ,
+        // +JSON.parse(localStorage.getItem("USER")).id,
+        success: function (data) {
+          for(let i=0;i<data.length;i++)
+          {
+
+          }
+        }
+      });
+      document.getElementById('main').innerHTML=``;
     }
     function searchByName(){
       let search=document.getElementById('search').value;
