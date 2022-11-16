@@ -7,6 +7,7 @@
 
     <link rel="apple-touch-icon" sizes="76x76" href="./admin/assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="./admin/assets/img/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
     <title>Admin</title>
 
@@ -40,6 +41,26 @@
             integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
             crossorigin="anonymous"
     ></script>
+    <style>
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
 
 </head>
 
@@ -65,20 +86,20 @@
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav">
 
-<!--            Quay lai giao dien nguoi dung-->
+            <!--            Quay lai giao dien nguoi dung-->
             <li class="nav-item">
                 <a class="nav-link text-white " href="./index.html">
 
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">dashboard</i>
                     </div>
-                  <span class="nav-link-text ms-1">Home</span>
+                    <span class="nav-link-text ms-1">Home</span>
                 </a>
             </li>
 
-<!--            Danh sach san pham-->
+            <!--            Danh sach san pham-->
             <li class="nav-item">
-                <a class="nav-link text-white ">
+                <a class="nav-link text-white " onclick="loadProduct(0)">
 
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">table_view</i>
@@ -88,7 +109,7 @@
                 </a>
             </li>
 
-<!--            Hoa don-->
+            <!--            Hoa don-->
             <li class="nav-item">
                 <a class="nav-link text-white ">
 
@@ -100,7 +121,7 @@
                 </a>
             </li>
 
-<!--            Doanh thu-->
+            <!--            Doanh thu-->
             <li class="nav-item">
                 <a class="nav-link text-white ">
 
@@ -123,13 +144,13 @@
                 </a>
             </li>
 
-<!--            Danh sach acount-->
+            <!--            Danh sach acount-->
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">Account pages</h6>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link text-white ">
+                <a class="nav-link text-white " onclick="showAdmin()">
 
                     <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                         <i class="material-icons opacity-10">person</i>
@@ -149,8 +170,9 @@
 
 
     <div class="container-fluid py-4">
-<!--        Main-->
+        <!--        Main-->
         <div class="row" id="main">
+
         </div>
 
     </div>
@@ -210,9 +232,7 @@
         console.log(localStorage.getItem("USERID"))
         $.ajax({
             type: "GET",
-            url:
-                "http://localhost:8686/receipt/find-all-by-StatusAndUserId?userId=" +localStorage.getItem("USERID") +
-                "&status=0",
+            url: "http://localhost:8686/receipt/find-all-by-Status?status=0",
             success: function (data) {
                 console.log(data)
                 let str = "";
@@ -267,6 +287,341 @@
             }
         });
     }
+
+    //xác nhận đơn hàng
+    function confirmOrder(id) {
+        // console.log(id)
+        $.ajax({
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            },
+
+            type: "PUT",
+            url: "http://localhost:8686/receipt/confirm?id=" + id,
+            success: function (data) {
+                alert("Đã thay đổi trạng thái đơn hàng!");
+                loadOrder();
+            },
+        });
+    }
+
+    function loadProduct(page) {
+        let str = `<div class="row mt-3"><button onclick="showAddForm()">Thêm mới</button></div>
+                    <div class="table">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>id</th>
+                            <th>name</th>
+                            <th>image</th>
+                            <th>number</th>
+                            <th>price</th>
+                            <th>category</th>
+                            <th>description</th>
+                            <th>sale</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Thêm sản phẩm</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addForm" style="background-color:#0dcaf0";>
+                                <label style="color: deepskyblue">Price: </label>
+                                <input type="text" name="price" class="form-control">
+                                <label style="color: deepskyblue">imageRoot: </label>
+                                <input type="text" name="imageRoot" class="form-control">
+                                <label style="color: deepskyblue">imageFirst: </label>
+                                <input type="text" name="imageFirst" class="form-control">
+                                <label style="color: deepskyblue">imageSecond: </label>
+                                <input type="text" name="imageSecond" class="form-control">
+                                <label style="color: deepskyblue">number: </label>
+                                <input type="text" name="number" class="form-control">
+                                <label style="color: deepskyblue">description: </label>
+                                <input type="text" name="description" class="form-control">
+                                <label style="color: deepskyblue">title: </label>
+                                <input type="text" name="title" class="form-control">
+                                <label style="color: deepskyblue">date: </label>
+                                <input type="text" name="date" class="form-control">
+                                <label style="color: deepskyblue">status: </label>
+                                <input type="text" name="status" class="form-control">
+                                <label style="color: deepskyblue">sale: </label>
+                                <input type="text" name="sale" class="form-control">
+                                <label style="color: deepskyblue">category: </label>
+                                <input type="text" name="category" class="form-control">
+                                <label style="color: deepskyblue">productType: </label>
+                                <input type="text" name="productType" class="form-control">
+                            </form>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="save()">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="row mt-3" id="contentPage"></div>
+                    </div>
+                </div>`
+        document.getElementById('main').innerHTML = str;
+        let tmp = "";
+        let pre = page - 1 > 0 ? page - 1 : 0;
+        let next = page + 1;
+        $.ajax({
+            type: 'GET',
+            url: "http://localhost:8686/products?page="+page,
+            success: function (data) {
+                console.log(data)
+                for (let i = 0; i < data.content.length; i++) {
+                    tmp += `<tr>
+                                <td>
+                                  ${data.content[i].id}
+                                </td>
+                                <td>
+                                  <p class="desc">
+                                    ${data.content[i].title}
+                                  </p>
+                                </td>
+                                <td><img src="${data.content[i].imageRoot}" style="width: 4rem;height: 4rem;object-fit: cover"></td>
+                                <td>
+                                  <div class="status">
+                                    <p class="status__active">${data.content[i].number}</p>
+                                  </div>
+                                </td>
+                                <td>${data.content[i].price}</td>
+                                <td>${data.content[i].category.name}</td>
+                                <td>${data.content[i].description}</td>
+                                <td>${data.content[i].sale}</td>
+                                <td><a>Sửa</a>|<a">Xóa</a></td>
+                              </tr>`;
+                }
+                document.getElementById('tbody').innerHTML = tmp;
+                //Phân trang
+                tmpPage = `<nav aria-label="Page navigation example" style="margin: 0 auto">
+                        \t\t\t\t\t\t<ul class="pagination">
+                        \t\t\t\t\t\t\t<li class="page-item"><a class="page-link" href="#" onclick="loadProduct(${pre})">Previous</a></li>
+                        \t\t\t\t\t\t\t<li class="page-item"><a class="page-link" href="#" onclick="loadProduct(0)">1</a></li>
+                        \t\t\t\t\t\t\t<li class="page-item"><a class="page-link" href="#" onclick="loadProduct(1)">2</a></li>
+                        \t\t\t\t\t\t\t<li class="page-item"><a class="page-link" href="#" onclick="loadProduct(2)">3</a></li>
+                        \t\t\t\t\t\t\t<li class="page-item"><a class="page-link" href="#" onclick="loadProduct(${next})">Next</a></li>
+                        \t\t\t\t\t\t</ul>
+                        \t\t\t\t\t</nav>`;
+                document.getElementById("contentPage").innerHTML = tmpPage;
+            }
+        });
+    }
+
+    function showAddForm() {
+        $('#exampleModal').modal('show');
+    }
+    function save() {
+        let formData = new FormData(addForm);
+        let obj = {
+            price: formData.get('price'),
+            imageRoot: formData.get('imageRoot'),
+            imageFirst: formData.get('imageFirst'),
+            imageSecond: formData.get('imageSecond'),
+            number: formData.get('number'),
+            description: formData.get('description'),
+            title: formData.get('title'),
+            date: formData.get('date'),
+            status: formData.get('status'),
+            sale: formData.get('sale'),
+            category: formData.get('category'),
+            productType: formData.get('productType')
+        }
+        $.ajax({
+            headers:{
+                'Accept' : 'application/json',
+                'Content-Type':'application/json',
+            },
+            type:'POST',
+            url: "http://localhost:8686/products",
+            data: JSON.stringify(obj),
+            success: function ()
+            {
+                $('#exampleModal').modal('hide');
+            },
+            error: function (error){
+                console.log(error)
+            }
+
+        })
+    }
+
+    //xóa 1 user
+    function deleteUser(id)
+    {
+        $.ajax({
+            // headers: {
+
+            //     Authorization: 'Bearer ' + localStorage.getItem("TOKEN")
+            // },
+            type: 'DELETE',
+            url: 'http://localhost:8686/user?id=' + id,
+            success: function (data) {
+                alert("Đã xóa nhân viên!");
+                showAdmin();
+
+            },
+        });
+    }
+    //load account
+    function loadAccount()
+    {
+        var tmp = ``;
+        $.ajax({
+            // headers: {
+            //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            // },
+            type: "GET",
+            url:"http://localhost:8686/user/all" ,
+            // +JSON.parse(localStorage.getItem("USER")).id,
+            success: function (data) {
+                for(let i=0;i<data.length;i++)
+                {
+
+                    tmp += `<tr>
+      <th scope="row">${i}</th>
+      <td>${data[i].username}</td>
+      <td>${data[i].roles[0].name=='ROLE_USER'?"USER":"ADMIN"}</td>
+      <td>Active</td>
+      <td>
+        <div class="admin-table__action">
+                            <i class="fa-solid fa-pen"></i>
+                            <i class="fa-solid fa-wrench"></i>
+                            <i class="fa-solid fa-trash" onclick="deleteUser(${data[i].id})"></i>
+                            </div>
+      </td>
+        </tr>`;
+
+                }
+                document.getElementById('tdata').innerHTML=tmp;
+            }
+        });
+
+
+    }
+    // search by name
+
+
+
+
+    function searchByName(){
+        let search=document.getElementById('search').value;
+        let tmp=``;
+        $.ajax({
+            // headers: {
+            //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            // },
+            type: "GET",
+            url:"http://localhost:8686/user/search-by-username?name="+search ,
+            // +JSON.parse(localStorage.getItem("USER")).id,
+            success: function (data) {
+                for(let i=0;i<data.length;i++)
+                {
+
+                    tmp += `<tr>
+      <th scope="row">${i}</th>
+      <td>${data[i].username}</td>
+      <td>${data[i].roles[0].name=='ROLE_USER'?"USER":"ADMIN"}</td>
+      <td>Active</td>
+      <td>
+        <div class="admin-table__action">
+                            <i class="fa-solid fa-pen"></i>
+                            <i class="fa-solid fa-wrench"></i>
+                            <i class="fa-solid fa-trash" onclick="deleteUser(${data[i].id})"></i>
+                            </div>
+      </td>
+        </tr>`;
+
+                }
+                document.getElementById('tdata').innerHTML=tmp;
+            }
+        });
+        document.getElementById('search').value='';
+    }
+
+    //tính toán doanh thu
+
+    function doanhthu()
+    {
+        var sum=0;
+        $.ajax({
+            // headers: {
+            //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            // },
+            type: "GET",
+            url:"http://localhost:8686/receipt/all" ,
+            // +JSON.parse(localStorage.getItem("USER")).id,
+            success: function (data) {
+                for(let i=0;i<data.length;i++)
+                {
+                    sum+=data[i].priceTotal;
+                }
+
+                document.getElementById('main').innerHTML=`tổng doanh thu: ${convertPrice(sum)}$`;
+            }
+        });
+
+    }
+
+
+
+    //show form admin
+    function showAdmin() {
+        document.body.innerHTML = `
+      <div style="text-align:center;font-size:2rem;">Admin</div>
+      <div class="dropdown">
+  <button class="dropbtn">Information</button>
+  <div class="dropdown-content">
+  <a onclick=doanhthu()>Doanh thu</a>
+  <div></div>
+  <a onclick="showAdmin()">Thông tin người dùng</a>
+  </div>
+</div>
+      <div style="display:inline-block;width:20rem;">
+        <div class="input-group mb-3">
+  <input id="search" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+  <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="searchByName()">Button</button>
+</div>
+
+</div>
+  <div id="main">
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">username</th>
+      <th scope="col">Role</th>
+      <th scope="col">Enable</th>
+      <th scope="col">Action<th>
+    </tr>
+  </thead>
+  <tbody id="tdata">
+
+  </tbody>
+</table></div>`;
+        loadAccount();
+
+    }d
+
+
+    //xác nhận đơn hàng
     function confirmOrder(id) {
         // console.log(id)
         $.ajax({
@@ -281,9 +636,110 @@
             success: function (data) {
                 alert("Đã thay đổi trạng thái đơn hàng!");
                 cart();
-            }
+            },
         });
     }
+    // convert
+    function convertPrice(price) {
+        let convert = "";
+        var stack = [];
+        let str = "";
+        while (price >= 1000) {
+            let result = price % 1000;
+            if (result < 10) {
+                convert = ".00" + (price % 1000).toString();
+            } else {
+                if (result < 100) {
+                    convert = ".0" + result.toString();
+                } else convert = "." + (price % 1000).toString();
+            }
+            stack.push(convert);
+            price = parseInt(price / 1000).toString();
+        }
+        stack.push(price);
+        for (var i = stack.length - 1; i >= 0; i--) {
+            //pop push cũng đc vì nó là hàm của stack
+            str += stack[i];
+        }
+        return str;
+    }
+
+    //show form admin
+    function showAdmin() {
+        document.body.innerHTML = `
+      <div style="text-align:center;font-size:2rem;">Admin</div>
+      <div class="dropdown">
+  <button class="dropbtn">Information</button>
+  <div class="dropdown-content">
+  <a onclick=doanhthu()>Doanh thu</a>
+  <a onclick="showAdmin()">Thông tin người dùng</a>
+  </div>
+</div>
+      <div style="display:inline-block;width:20rem;">
+        <div class="input-group mb-3">
+  <input id="search" type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
+  <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="searchByName()">Button</button>
+</div>
+
+</div>
+  <div id="main">
+    <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">username</th>
+      <th scope="col">Role</th>
+      <th scope="col">Enable</th>
+      <th scope="col">Action<th>
+    </tr>
+  </thead>
+  <tbody id="tdata">
+
+  </tbody>
+</table></div>`;
+        loadAccount();
+
+    }
+
+    //load account
+    function loadAccount()
+    {
+        var tmp = ``;
+        $.ajax({
+            // headers: {
+            //   // Authorization: "Bearer " + localStorage.getItem("TOKEN"),
+            // },
+            type: "GET",
+            url:"http://localhost:8686/user/all" ,
+            // +JSON.parse(localStorage.getItem("USER")).id,
+            success: function (data) {
+                for(let i=0;i<data.length;i++)
+                {
+
+                    tmp += `<tr>
+      <th scope="row">${i}</th>
+      <td>${data[i].username}</td>
+      <td>${data[i].roles[0].name=='ROLE_USER'?"USER":"ADMIN"}</td>
+      <td>Active</td>
+      <td>
+        <div class="admin-table__action">
+                            <i class="fa-solid fa-pen"></i>
+                            <i class="fa-solid fa-wrench"></i>
+                            <i class="fa-solid fa-trash" onclick="deleteUser(${data[i].id})"></i>
+                            </div>
+      </td>
+        </tr>`;
+
+                }
+                document.getElementById('tdata').innerHTML=tmp;
+            }
+        });
+
+
+    }
+
+
+
 </script>
 </body>
 

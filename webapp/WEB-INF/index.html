@@ -3577,6 +3577,128 @@
         }
       })
     }
+    function showAccount() {
+      let str = `<div class="container">
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <div class="col-8">
+                                <h1>My Account Page</h1>
+                                <div class="content-page">
+                                  <h3>My Account</h3>
+                                  <ul>
+                                    <li><a href="javascript:;">Edit your account information</a></li>
+                                    <li><a href="javascript:;" onclick="ShowChangePasswordForm()">Change your password</a></li>
+                                  </ul>
+                                  <hr>
+
+                                  <h3>My Orders</h3>
+                                  <ul>
+                                    <li><a href="javascript:;">View your order history</a></li>
+                                  </ul>
+                                </div>
+                              </div>
+                            <div class="col-2"></div>
+                        </div>
+                    </div>`
+      document.getElementById('main').innerHTML = str;
+    }
+    function ShowChangePasswordForm() {
+      let str = `<div class="container">
+                    \t\t\t<div class="row main">
+                    \t\t\t\t<div class="main-login main-center">
+                    \t\t\t\t<div class="panel-heading">
+                    \t               <div class="panel-title text-center">
+                    \t               \t\t<h1 class="title">Change Password</h1>
+                    \t               \t\t<hr />
+                    \t               \t</div>
+                    \t            </div>
+                    \t\t\t\t\t<form class="form-horizontal" method="post">
+                    \t\t\t\t\t\t
+
+                    \t\t\t\t\t\t<div class="form-group">
+                    \t\t\t\t\t\t\t<label for="username" class="cols-sm-2 control-label">Username</label>
+                    \t\t\t\t\t\t\t<div class="cols-sm-10">
+                    \t\t\t\t\t\t\t\t<div class="input-group">
+                    \t\t\t\t\t\t\t\t\t<span class="input-group-addon"><i class="fa fa-users fa" aria-hidden="true"></i></span>
+                    \t\t\t\t\t\t\t\t\t<input type="text" class="form-control" name="username" id="username"  placeholder="Enter your Username"/>
+                    \t\t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t</div>
+
+                    \t\t\t\t\t\t<div class="form-group">
+                    \t\t\t\t\t\t\t<label for="password" class="cols-sm-2 control-label">Old Password</label>
+                    \t\t\t\t\t\t\t<div class="cols-sm-10">
+                    \t\t\t\t\t\t\t\t<div class="input-group">
+                    \t\t\t\t\t\t\t\t\t<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                    \t\t\t\t\t\t\t\t\t<input type="password" class="form-control" name="password" id="oldpassword"  placeholder="Enter your Old Password"/>
+                    \t\t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t</div>
+
+                    \t\t\t\t\t\t<div class="form-group">
+                    \t\t\t\t\t\t\t<label for="password" class="cols-sm-2 control-label">New Password</label>
+                    \t\t\t\t\t\t\t<div class="cols-sm-10">
+                    \t\t\t\t\t\t\t\t<div class="input-group">
+                    \t\t\t\t\t\t\t\t\t<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                    \t\t\t\t\t\t\t\t\t<input type="password" class="form-control" name="password" id="newpassword"  placeholder="Enter your New Password"/>
+                    \t\t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t</div>
+
+                    \t\t\t\t\t\t<div class="form-group">
+                    \t\t\t\t\t\t\t<label for="confirm" class="cols-sm-2 control-label">Confirm New Password</label>
+                    \t\t\t\t\t\t\t<div class="cols-sm-10">
+                    \t\t\t\t\t\t\t\t<div class="input-group">
+                    \t\t\t\t\t\t\t\t\t<span class="input-group-addon"><i class="fa fa-lock fa-lg" aria-hidden="true"></i></span>
+                    \t\t\t\t\t\t\t\t\t<input type="password" class="form-control" name="confirmPassword" id="confirmNewPassword"  placeholder="Confirm your New Password"/>
+                    \t\t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t\t</div>
+                    \t\t\t\t\t\t</div>
+
+                    \t\t\t\t\t\t<div class="form-group">
+                    \t\t\t\t\t\t\t<button class="btn btn-primary btn-lg btn-block login-button" onclick="confirmChangePassword()">Confirm</button>
+                    \t\t\t\t\t\t</div>
+                    \t\t\t\t\t</form>
+                    \t\t\t\t</div>
+                    \t\t\t</div>`
+      document.getElementById('main').innerHTML = str;
+    }
+
+    function confirmChangePassword() {
+      let user = JSON.parse(localStorage.getItem('USER'));
+      let username = document.getElementById('username').value;
+      let oldPass = document.getElementById('oldPassword').value;
+      let newPass = document.getElementById('newPassword').value;
+      let confirmNewPass = document.getElementById('confirmNewPassword').value;
+      console.log(confirmNewPass);
+      if (username == user.username && oldPass == localStorage.getItem('PASSWORD') && newPass == confirmNewPass) {
+        let obj = {
+          id: user.id,
+          username: username,
+          enabled: true,
+          password: newPass,
+          confirmPassword: confirmNewPass
+        }
+        console.log(obj);
+        $.ajax({
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('TOKEN')
+          },
+          type: 'PUT',
+          url: 'http://localhost:8080/update-user/' + user.id,
+          data: JSON.stringify(obj),
+          success: function () {
+            console.log(obj)
+            alert('Thay đổi thành công');
+            showLoginForm();
+          }
+        });
+      } else {
+        alert('Thay đổi thất bại');
+      }
+    }
   </script>
   <!-- END BODY -->
 </html>
